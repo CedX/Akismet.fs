@@ -1,0 +1,15 @@
+### Submits the specified comment that was incorrectly marked as spam but should not have been.
+POST {{baseUrl}}/submit-ham
+Content-Type: application/x-www-form-urlencoded
+
+api_key={{$processEnv %apiKey}}
+&blog=https://github.com/CedX/Akismet.fs
+&comment_author=Akismet
+&comment_author_url=https://cedric-belin.fr
+&comment_content=I'm testing out the Service API.
+&comment_type=comment
+&is_test=true
+&referrer=https://www.nuget.org/packages/Belin.Akismet.FSharp
+&user_agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0
+&user_ip=192.168.0.1
+&user_role=administrator

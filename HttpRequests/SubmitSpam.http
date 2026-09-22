@@ -1,0 +1,13 @@
+### Submits the specified comment that was not marked as spam but should have been.
+POST {{baseUrl}}/submit-spam
+Content-Type: application/x-www-form-urlencoded
+
+api_key={{$processEnv %apiKey}}
+&blog=https://github.com/CedX/Akismet.fs
+&comment_author=viagra-test-123
+&comment_content=Spam!
+&comment_type=trackback
+&comment_author_email=akismet-guaranteed-spam%40example.com
+&is_test=true
+&user_ip=127.0.0.1
+&user_agent=Spam Bot/6.6.6
