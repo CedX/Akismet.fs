@@ -28,6 +28,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="Author.fs" />
 		<Compile Include="Blog.fs" />
 	</ItemGroup>
 
