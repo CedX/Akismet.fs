@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Company>Cedric-Belin.fr</Company>
+		<Copyright>© Cédric Belin</Copyright>
+		<Description>Prevent comment spam using the Akismet service.</Description>
+		<Product>Akismet for F#</Product>
+		<Version>5.2.1</Version>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Authors>CedX</Authors>
+		<IncludeSymbols>true</IncludeSymbols>
+		<PackageIcon>Icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+		<PackageTags>akismet;api;client;comment;spam;validation</PackageTags>
+		<RepositoryUrl>https://github.com/CedX/Akismet.fs.git</RepositoryUrl>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AssemblyName>Belin.Akismet.FSharp</AssemblyName>
+		<HotReloadAutoRestart>true</HotReloadAutoRestart>
+		<OutDir>../Binaries</OutDir>
+		<RootNamespace>Belin.Akismet</RootNamespace>
+		<TargetFramework>net10.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup><Compile Include="..\Tests\AssemblyInfo.fs" />
+		<Compile Include="Blog.fs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(RootNamespace).Tests" />
+		<None Include="../Icon.png" Pack="true" PackagePath="" />
+		<None Include="../ReadMe.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+</Project>
