@@ -30,6 +30,8 @@
 	<ItemGroup>
 		<Compile Include="Author.fs" />
 		<Compile Include="Blog.fs" />
+		<Compile Include="CheckResult.fs" />
+		<Compile Include="Comment.fs" />
 	</ItemGroup>
 
 	<ItemGroup>
