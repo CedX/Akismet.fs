@@ -32,6 +32,7 @@
 		<Compile Include="Blog.fs" />
 		<Compile Include="CheckResult.fs" />
 		<Compile Include="Comment.fs" />
+		<Compile Include="Client.fs" />
 	</ItemGroup>
 
 	<ItemGroup>

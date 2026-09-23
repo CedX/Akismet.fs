@@ -12,7 +12,7 @@ type Comment(author: Author) =
   member val Content = "" with get, set
 
   /// The context in which this comment was posted.
-  member val Context = ResizeArray<string>() with get, set
+  member val Context: string list = [] with get, set
 
   /// The UTC timestamp of the creation of the comment.
   member val Date: DateTime option = None with get, set
@@ -35,14 +35,14 @@ type Comment(author: Author) =
   /// Converts this comment to a dictionary.
   member internal this.ToDictionary() =
     let dictionary = this.Author.ToDictionary()
-    if not (String.IsNullOrWhiteSpace this.Content) then dictionary.Add ("comment_content", this.Content)
-    // TODO if this.Context.Count > 0 then dictionary.Add ("comment_context", this.Context |> String.concat ",")
-    match this.Date with None -> () | Some value -> dictionary.Add ("comment_date_gmt", value.ToUniversalTime().ToString "o")
-    match this.Permalink with None -> () | Some value -> dictionary.Add ("permalink", value.ToString())
-    match this.PostModified with None -> () | Some value -> dictionary.Add ("comment_post_modified_gmt", value.ToUniversalTime().ToString "o")
-    if not (String.IsNullOrWhiteSpace this.RecheckReason) then dictionary.Add ("recheck_reason", this.RecheckReason)
-    match this.Referrer with None -> () | Some value -> dictionary.Add ("referrer", value.ToString())
-    if not (String.IsNullOrWhiteSpace this.Type) then dictionary.Add ("comment_type", this.Type)
+    if not (String.IsNullOrWhiteSpace this.Content) then dictionary.Add("comment_content", this.Content)
+    // TODO if not this.Context.IsEmpty then dictionary.Add("comment_context", this.Context |> String.concat ",")
+    match this.Date with None -> () | Some value -> dictionary.Add("comment_date_gmt", value.ToUniversalTime().ToString "o")
+    match this.Permalink with None -> () | Some value -> dictionary.Add("permalink", value.ToString())
+    match this.PostModified with None -> () | Some value -> dictionary.Add("comment_post_modified_gmt", value.ToUniversalTime().ToString "o")
+    if not (String.IsNullOrWhiteSpace this.RecheckReason) then dictionary.Add("recheck_reason", this.RecheckReason)
+    match this.Referrer with None -> () | Some value -> dictionary.Add("referrer", value.ToString())
+    if not (String.IsNullOrWhiteSpace this.Type) then dictionary.Add("comment_type", this.Type)
     dictionary
 
 /// Specifies the type of a comment.

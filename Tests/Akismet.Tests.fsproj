@@ -27,5 +27,6 @@
 		<Compile Include="Author.Tests.fs" />
 		<Compile Include="Blog.Tests.fs" />
 		<Compile Include="Comment.Tests.fs" />
+		<Compile Include="Client.Tests.fs" />
 	</ItemGroup>
 </Project>
