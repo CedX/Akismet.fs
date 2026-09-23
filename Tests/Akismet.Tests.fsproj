@@ -26,5 +26,6 @@
 		<Compile Include="AssemblyInfo.fs" />
 		<Compile Include="Author.Tests.fs" />
 		<Compile Include="Blog.Tests.fs" />
+		<Compile Include="Comment.Tests.fs" />
 	</ItemGroup>
 </Project>

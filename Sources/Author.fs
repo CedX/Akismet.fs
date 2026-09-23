@@ -28,14 +28,14 @@ type Author(ipAddress: IPAddress) =
   /// Creates a new author.
   new(ipAddress: string) = Author(IPAddress.Parse ipAddress)
 
-  /// Converts the specified author to a dictionary.
-  member internal this.ToDictionary(): IReadOnlyDictionary<string, string> =
+  /// Converts this author to a dictionary.
+  member internal this.ToDictionary() =
     let dictionary = Dictionary<string, string>()
     dictionary.Add ("user_ip", this.IPAddress.ToString())
     if not (String.IsNullOrWhiteSpace this.Email) then dictionary.Add ("comment_author_email", this.Email)
     if not (String.IsNullOrWhiteSpace this.Name) then dictionary.Add ("comment_author", this.Name)
     if not (String.IsNullOrWhiteSpace this.Role) then dictionary.Add ("user_role", this.Role)
-    match this.Url with None -> () | Some uri -> dictionary.Add ("comment_author_url", uri.ToString())
+    match this.Url with None -> () | Some value -> dictionary.Add ("comment_author_url", value.ToString())
     if not (String.IsNullOrWhiteSpace this.UserAgent) then dictionary.Add ("user_agent", this.UserAgent)
     dictionary
 
@@ -43,4 +43,5 @@ type Author(ipAddress: IPAddress) =
 module AuthorRole =
 
   /// The author is an administrator.
-  [<Literal>] let Administrator = "administrator"
+  [<Literal>]
+  let Administrator = "administrator"

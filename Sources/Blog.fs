@@ -19,10 +19,10 @@ type Blog(url: Uri) =
   /// Creates a new blog.
   new(url: string) = Blog(Uri(url, UriKind.Absolute))
 
-  /// Converts the specified blog to a dictionary.
-  member internal this.ToDictionary(): IReadOnlyDictionary<string, string> =
+  /// Converts this blog to a dictionary.
+  member internal this.ToDictionary() =
     let dictionary = Dictionary<string, string>()
     dictionary.Add ("blog", this.Url.ToString())
-    match this.Charset with None -> () | Some encoding -> dictionary.Add ("blog_charset", encoding.WebName)
+    match this.Charset with None -> () | Some value -> dictionary.Add ("blog_charset", value.WebName)
     if this.Languages.Count > 0 then dictionary.Add ("blog_lang", this.Languages |> String.concat ",")
     dictionary
