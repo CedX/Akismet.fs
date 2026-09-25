@@ -11,6 +11,8 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AssemblyName>Belin.Akismet.Tests</AssemblyName>
 		<BaseOutputPath>obj</BaseOutputPath>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 		<OutDir>../Binaries</OutDir>
 		<RootNamespace>Belin.Akismet</RootNamespace>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>

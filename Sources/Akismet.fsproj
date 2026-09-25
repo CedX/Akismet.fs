@@ -22,10 +22,18 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AssemblyName>Belin.Akismet.FSharp</AssemblyName>
 		<HotReloadAutoRestart>true</HotReloadAutoRestart>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 		<OutDir>../Binaries</OutDir>
 		<RootNamespace>Belin.Akismet</RootNamespace>
 		<TargetFramework>net10.0</TargetFramework>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(RootNamespace).Tests" />
+		<None Include="../Icon.png" Pack="true" PackagePath="" />
+		<None Include="../ReadMe.md" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Include="Author.fs" />
@@ -33,11 +41,5 @@
 		<Compile Include="CheckResult.fs" />
 		<Compile Include="Comment.fs" />
 		<Compile Include="Client.fs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<InternalsVisibleTo Include="$(RootNamespace).Tests" />
-		<None Include="../Icon.png" Pack="true" PackagePath="" />
-		<None Include="../ReadMe.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 </Project>
