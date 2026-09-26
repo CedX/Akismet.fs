@@ -32,6 +32,26 @@ function Invoke-DotNetTest {
 
 <#
 .SYNOPSIS
+	Invokes the FSharpLint static analyzer.
+#>
+function Invoke-FSharpLint {
+	param (
+		# The path to the file or directory to be analyzed.
+		[Parameter(Mandatory, Position = 1)]
+		[string[]] $Path,
+
+		# The path to the configuration file.
+		[ValidateScript({ Test-Path $_ -PathType Leaf }, ErrorMessage = "The specified configuration file does not exist.")]
+		[string] $Configuration
+	)
+
+	$argumentList = $Configuration ? "--lint-config", $Configuration : @()
+	$argumentList += $Path
+	dotnet fsharplint lint @argumentList
+}
+
+<#
+.SYNOPSIS
 	Creates a new Git tag.
 #>
 function New-GitTag {
@@ -60,7 +80,7 @@ function Publish-NuGetPackage {
 	$argumentList = "--output", $output
 	if ($NoBuild) { $argumentList += "--no-build" }
 	dotnet pack @argumentList
-	foreach ($package in Get-Item $output/*.nupkg) { dotnet nuget push $package --api-key $Env:NUGET_API_KEY --source NuGet }
+	Get-Item $output/*.nupkg | ForEach-Object { dotnet nuget push $_ --api-key $Env:NUGET_API_KEY --source NuGet }
 }
 
 <#
