@@ -13,7 +13,7 @@ type Client(apiKey: string, blog: Blog) =
   static let Success = "Thanks for making the web a better place."
 
   /// The assembly version.
-  static let Version = typeof<Client>.Assembly.GetName().Version
+  static let Version = nonNull (typeof<Client>.Assembly.GetName().Version)
 
   /// Value indicating whether this object has been disposed.
   let mutable disposed = false
@@ -43,13 +43,17 @@ type Client(apiKey: string, blog: Blog) =
       GC.SuppressFinalize this
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
-  member this.VerifyKey(): bool = this.VerifyKeyAsync() |> Async.RunSynchronously
+  member this.VerifyKey(): Result<bool, HttpRequestException> =
+    this.VerifyKeyAsync() |> Async.RunSynchronously
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
   member this.VerifyKeyAsync(): Async<Result<bool, HttpRequestException>> = async {
-    let! response = this.PostAsync("1.1/verify-key", None)
-    let! body = response.Content.ReadAsStringAsync() |> Async.AwaitTask
-    return body = "valid"
+    try
+      let! response = this.PostAsync("1.1/verify-key", None)
+      let! body = response.Content.ReadAsStringAsync() |> Async.AwaitTask
+      return Ok (body = "valid")
+    with :? HttpRequestException as exn ->
+      return Error exn
   }
 
   /// Releases any resources associated with this object.
@@ -59,7 +63,7 @@ type Client(apiKey: string, blog: Blog) =
       disposed <- true
 
   /// Queries the service by posting the specified fields to a given end point, and returns the response.
-  member private this.PostAsync(requestUri: string, fields: IDictionary<string, string> option): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
+  member private this.PostAsync(requestUri: string, fields: IDictionary<string, string> option): Async<HttpResponseMessage> = async {
     let body = this.Blog.ToDictionary()
     body.Add("api_key", this.ApiKey)
     if this.IsTest then body.Add("is_test", "1")
@@ -71,16 +75,13 @@ type Client(apiKey: string, blog: Blog) =
     let! response = httpClient.SendAsync request |> Async.AwaitTask
     response.EnsureSuccessStatusCode() |> ignore
 
-    return
-      try
-        let statusCode = HttpStatusCode.BadRequest
-        match response.Headers.TryGetValues "X-akismet-alert-msg" with
-        | false, _ -> ()
-        | true, value -> HttpRequestException(value |> Seq.head, null, statusCode) |> raise
-        match response.Headers.TryGetValues "X-akismet-debug-help" with
-        | false, _ -> ()
-        | true, value -> HttpRequestException(value |> Seq.head, null, statusCode) |> raise
-        Ok response
-      with :? HttpRequestException as e ->
-        Error e
+    let statusCode = HttpStatusCode.BadRequest
+    match response.Headers.TryGetValues "X-akismet-alert-msg" with
+    | false, _ -> ()
+    | true, value -> raise (HttpRequestException(nonNull value |> Seq.head, null, statusCode))
+    match response.Headers.TryGetValues "X-akismet-debug-help" with
+    | false, _ -> ()
+    | true, value -> raise (HttpRequestException(nonNull value |> Seq.head, null, statusCode))
+
+    return response
   }
