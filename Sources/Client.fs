@@ -13,7 +13,7 @@ type Client(apiKey: string, blog: Blog) =
   static let Success = "Thanks for making the web a better place."
 
   /// The assembly version.
-  static let Version = nonNull (typeof<Client>.Assembly.GetName().Version)
+  static let Version = typeof<Client>.Assembly.GetName().Version |> nonNull
 
   /// Value indicating whether this object has been disposed.
   let mutable disposed = false
