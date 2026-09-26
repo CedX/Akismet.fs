@@ -9,7 +9,7 @@ Add Akismet to your [F#](https://learn.microsoft.com/en-us/dotnet/fsharp) applic
 ## Quick start
 Install the latest version of **Akismet for F#** with [NuGet](https://www.nuget.org) package manager:
 
-```shell
+```powershell
 dotnet package add Belin.Akismet.FSharp
 ```
 
