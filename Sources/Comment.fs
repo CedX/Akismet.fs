@@ -38,10 +38,10 @@ type Comment(author: Author) =
     if not (String.IsNullOrWhiteSpace this.Content) then dictionary.Add("comment_content", this.Content)
     // TODO if not this.Context.IsEmpty then dictionary.Add("comment_context", this.Context |> String.concat ",")
     match this.Date with None -> () | Some value -> dictionary.Add("comment_date_gmt", value.ToUniversalTime().ToString "o")
-    match this.Permalink with None -> () | Some value -> dictionary.Add("permalink", value.ToString())
+    match this.Permalink with None -> () | Some value -> dictionary.Add("permalink", string value)
     match this.PostModified with None -> () | Some value -> dictionary.Add("comment_post_modified_gmt", value.ToUniversalTime().ToString "o")
     if not (String.IsNullOrWhiteSpace this.RecheckReason) then dictionary.Add("recheck_reason", this.RecheckReason)
-    match this.Referrer with None -> () | Some value -> dictionary.Add("referrer", value.ToString())
+    match this.Referrer with None -> () | Some value -> dictionary.Add("referrer", string value)
     if not (String.IsNullOrWhiteSpace this.Type) then dictionary.Add("comment_type", this.Type)
     dictionary
 

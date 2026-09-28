@@ -22,7 +22,7 @@ type Blog(url: Uri) =
   /// Converts this blog to a dictionary.
   member internal this.ToDictionary() =
     let dictionary = Dictionary<string, string>()
-    dictionary.Add("blog", this.Url.ToString())
+    dictionary.Add("blog", string this.Url)
     match this.Charset with None -> () | Some value -> dictionary.Add("blog_charset", value.WebName)
     if not this.Languages.IsEmpty then dictionary.Add("blog_lang", this.Languages |> String.concat ",")
     dictionary

@@ -52,8 +52,8 @@ type Client(apiKey: string, blog: Blog) =
       let! response = this.PostAsync("1.1/verify-key", None)
       let! body = response.Content.ReadAsStringAsync() |> Async.AwaitTask
       return Ok (body = "valid")
-    with :? HttpRequestException as exn ->
-      return Error exn
+    with :? HttpRequestException as ex ->
+      return Error ex
   }
 
   /// Releases any resources associated with this object.
