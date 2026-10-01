@@ -3,7 +3,7 @@ namespace Belin.Akismet
 open System
 
 /// Represents a comment submitted by an author.
-type Comment(author: Author) =
+type Comment (author: Author) =
 
   /// The comment's author.
   member val Author: Author = author with get, set
@@ -33,7 +33,7 @@ type Comment(author: Author) =
   member val Type = "" with get, set
 
   /// Converts this comment to a dictionary.
-  member internal this.ToDictionary() =
+  member internal this.ToDictionary () =
     let dictionary = this.Author.ToDictionary()
     if not (String.IsNullOrWhiteSpace this.Content) then dictionary.Add("comment_content", this.Content)
     // TODO if not this.Context.IsEmpty then dictionary.Add("comment_context", this.Context |> String.concat ",")

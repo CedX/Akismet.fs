@@ -5,7 +5,7 @@ open System.Collections.Generic
 open System.Text
 
 /// Represents the front page or home URL transmitted when making requests.
-type Blog(url: Uri) =
+type Blog (url: Uri) =
 
   /// The character encoding for the values included in comments.
   member val Charset: Encoding option = None with get, set
@@ -20,7 +20,7 @@ type Blog(url: Uri) =
   new(url: string) = Blog(Uri(url, UriKind.Absolute))
 
   /// Converts this blog to a dictionary.
-  member internal this.ToDictionary() =
+  member internal this.ToDictionary () =
     let dictionary = Dictionary<string, string>()
     dictionary.Add("blog", string this.Url)
     match this.Charset with None -> () | Some value -> dictionary.Add("blog_charset", value.WebName)

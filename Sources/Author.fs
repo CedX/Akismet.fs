@@ -5,7 +5,7 @@ open System.Collections.Generic
 open System.Net
 
 /// Represents the author of a comment.
-type Author(ipAddress: IPAddress) =
+type Author (ipAddress: IPAddress) =
 
   /// The author's mail address. If you set it to `"akismet-guaranteed-spam@example.com"`, Akismet will always return `true`.
   member val Email = "" with get, set
@@ -29,7 +29,7 @@ type Author(ipAddress: IPAddress) =
   new(ipAddress: string) = Author(IPAddress.Parse ipAddress)
 
   /// Converts this author to a dictionary.
-  member internal this.ToDictionary() =
+  member internal this.ToDictionary () =
     let dictionary = Dictionary<string, string>()
     dictionary.Add("user_ip", string this.IPAddress)
     if not (String.IsNullOrWhiteSpace this.Email) then dictionary.Add("comment_author_email", this.Email)

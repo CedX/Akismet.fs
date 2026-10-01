@@ -6,7 +6,7 @@ open System.Net
 open System.Net.Http
 
 /// Submits comments to the Akismet service.
-type Client(apiKey: string, blog: Blog) =
+type Client (apiKey: string, blog: Blog) =
 
   /// The response returned by the `submit-ham` and `submit-spam` endpoints when the outcome is a success.
   [<Literal>]
