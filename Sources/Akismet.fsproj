@@ -34,6 +34,7 @@
 		<InternalsVisibleTo Include="$(RootNamespace).Tests" />
 		<None Include="../Icon.png" Pack="true" PackagePath="" />
 		<None Include="../ReadMe.md" Pack="true" PackagePath="" />
+		<PackageReference Update="FSharp.Core" Version="10.0.100" />
 	</ItemGroup>
 
 	<ItemGroup>
