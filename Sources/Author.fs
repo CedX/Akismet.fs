@@ -5,7 +5,7 @@ open System.Collections.Generic
 open System.Net
 
 /// Represents the author of a comment.
-type Author (ipAddress: IPAddress) =
+type Author(ipAddress: IPAddress) =
 
   /// The author's mail address. If you set it to `"akismet-guaranteed-spam@example.com"`, Akismet will always return `true`.
   member val Email = "" with get, set

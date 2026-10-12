@@ -5,7 +5,7 @@ open System.Collections.Generic
 open System.Text
 
 /// Represents the front page or home URL transmitted when making requests.
-type Blog (url: Uri) =
+type Blog(url: Uri) =
 
   /// The character encoding for the values included in comments.
   member val Charset: Encoding option = None with get, set

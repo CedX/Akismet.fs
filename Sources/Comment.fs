@@ -3,7 +3,7 @@ namespace Belin.Akismet
 open System
 
 /// Represents a comment submitted by an author.
-type Comment (author: Author) =
+type Comment(author: Author) =
 
   /// The comment's author.
   member val Author: Author = author with get, set

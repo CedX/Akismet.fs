@@ -11,12 +11,12 @@ type BlogTests () =
   member _.ToDictionary () =
     // It should return only the blog URL with a newly created instance.
     let mutable dictionary = (Blog "https://github.com/CedX/Akismet.fs").ToDictionary()
-    Assert.HasCount (1, dictionary)
-    Assert.AreEqual ("https://github.com/CedX/Akismet.fs", dictionary["blog"])
+    dictionary.Count |> Should.be 1
+    dictionary["blog"] |> Should.be "https://github.com/CedX/Akismet.fs"
 
     // It should return a non-empty map with an initialized instance.
     dictionary <- Blog("https://github.com/CedX/Akismet.fs", Charset = Some Encoding.UTF8, Languages = ["en"; "fr"]).ToDictionary()
-    Assert.HasCount (3, dictionary)
-    Assert.AreEqual ("https://github.com/CedX/Akismet.fs", dictionary["blog"])
-    Assert.AreEqual ("utf-8", dictionary["blog_charset"])
-    Assert.AreEqual ("en,fr", dictionary["blog_lang"])
+    dictionary.Count |> Should.be 3
+    dictionary["blog"] |> Should.be "https://github.com/CedX/Akismet.fs"
+    dictionary["blog_charset"] |> Should.be "utf-8"
+    dictionary["blog_lang"] |> Should.be "en,fr"
