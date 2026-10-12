@@ -4,16 +4,17 @@ open System
 open System.Collections.Generic
 open System.Net
 open System.Net.Http
+open System.Threading
 
 /// Submits comments to the Akismet service.
 type Client(apiKey: string, blog: Blog) =
 
   /// The response returned by the `submit-ham` and `submit-spam` endpoints when the outcome is a success.
   [<Literal>]
-  static let Success = "Thanks for making the web a better place."
+  static let success = "Thanks for making the web a better place."
 
   /// The assembly version.
-  static let Version = typeof<Client>.Assembly.GetName().Version |> nonNull
+  static let version = nonNull (typeof<Client>.Assembly.GetName().Version)
 
   /// Value indicating whether this object has been disposed.
   let mutable disposed = false
@@ -34,7 +35,7 @@ type Client(apiKey: string, blog: Blog) =
   member val IsTest = false with get, set
 
   /// The user agent string to use when making requests.
-  member val UserAgent = $".NET/{Environment.Version} | Belin.Akismet.FSharp/{Version.ToString 3}" with get, set
+  member val UserAgent = $".NET/{Environment.Version} | Belin.Akismet.FSharp/{version.ToString 3}" with get, set
 
   interface IDisposable with
     /// Releases any resources associated with this object.
@@ -42,18 +43,62 @@ type Client(apiKey: string, blog: Blog) =
       this.Dispose(disposing = true)
       GC.SuppressFinalize this
 
-  /// Checks the API key against the service database, and returns a value indicating whether it is valid.
-  member this.VerifyKey(): Result<bool, HttpRequestException> =
-    this.VerifyKeyAsync() |> Async.RunSynchronously
+  /// Checks the specified comment against the service database, and returns a value indicating whether it is spam.
+  member this.CheckCommentAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<CheckResult, HttpRequestException>> = async {
+    match! this.PostAsync("1.1/comment-check", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
+    | Error error -> return Error error
+    | Ok response ->
+      match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
+      | "false" -> return Ok Ham
+      | _ ->
+        match response.Headers.TryGetValues "X-akismet-pro-tip" with
+        | false, _ -> return Ok Spam
+        | true, header -> return Ok (if nonNull header |> Seq.head = "discard" then PervasiveSpam else Spam)
+  }
+
+  /// Checks the specified comment against the service database, and returns a value indicating whether it is spam.
+  member this.CheckComment(comment: Comment, ?cancellationToken: CancellationToken): Result<CheckResult, HttpRequestException> =
+    this.CheckCommentAsync(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
+
+  /// Submits the specified comment that was incorrectly marked as spam but should not have been.
+  member this.SubmitHamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
+    match! this.PostAsync("1.1/submit-ham", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
+    | Error error -> return Error error
+    | Ok response ->
+      match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
+      | body when body = success -> return Ok ()
+      | _ -> return Error (HttpRequestException "Invalid server response.")
+  }
+
+  /// Submits the specified comment that was incorrectly marked as spam but should not have been.
+  member this.SubmitHam(comment: Comment, ?cancellationToken: CancellationToken): Result<unit, HttpRequestException> =
+    this.SubmitHamAsync(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
+
+  /// Submits the specified comment that was not marked as spam but should have been.
+  member this.SubmitSpamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
+    match! this.PostAsync("1.1/submit-spam", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
+    | Error error -> return Error error
+    | Ok response ->
+      match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
+      | body when body = success -> return Ok ()
+      | _ -> return Error (HttpRequestException "Invalid server response.")
+  }
+
+  /// Submits the specified comment that was not marked as spam but should have been.
+  member this.SubmitSpam(comment: Comment, ?cancellationToken: CancellationToken): Result<unit, HttpRequestException> =
+    this.SubmitSpamAsync(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
-  member this.VerifyKeyAsync(): Async<Result<bool, HttpRequestException>> = async {
-    try
-      let! response = this.PostAsync("1.1/verify-key", None)
+  member this.VerifyKey(?cancellationToken: CancellationToken): Result<bool, HttpRequestException> =
+    this.VerifyKeyAsync(?cancellationToken = cancellationToken) |> Async.RunSynchronously
+
+  /// Checks the API key against the service database, and returns a value indicating whether it is valid.
+  member this.VerifyKeyAsync(?cancellationToken: CancellationToken): Async<Result<bool, HttpRequestException>> = async {
+    match! this.PostAsync("1.1/verify-key", ?cancellationToken = cancellationToken) with
+    | Error error -> return Error error
+    | Ok response ->
       let! body = response.Content.ReadAsStringAsync() |> Async.AwaitTask
       return Ok (body = "valid")
-    with :? HttpRequestException as ex ->
-      return Error ex
   }
 
   /// Releases any resources associated with this object.
@@ -63,25 +108,33 @@ type Client(apiKey: string, blog: Blog) =
       disposed <- true
 
   /// Queries the service by posting the specified fields to a given end point, and returns the response.
-  member private this.PostAsync(requestUri: string, fields: IDictionary<string, string> option): Async<HttpResponseMessage> = async {
+  member private this.PostAsync(requestUri: string, ?fields: IDictionary<string, string>, ?cancellationToken: CancellationToken): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
     let body = this.Blog.ToDictionary()
     body.Add("api_key", this.ApiKey)
     if this.IsTest then body.Add("is_test", "1")
-    match fields with None -> () | Some value -> for entry in value do body.Add(entry.Key, entry.Value)
+    match fields with None -> () | Some entries -> for entry in entries do body.Add(entry.Key, entry.Value)
 
-    use request = new HttpRequestMessage(HttpMethod.Post, Uri(this.BaseUrl, requestUri))
+    use request = new HttpRequestMessage(HttpMethod.Post, Uri(this.BaseUrl, requestUri), Content = new FormUrlEncodedContent(body))
     request.Headers.Add("User-Agent", this.UserAgent)
 
-    let! response = httpClient.SendAsync request |> Async.AwaitTask
-    response.EnsureSuccessStatusCode() |> ignore
+    try
+      let! ambientToken = Async.CancellationToken
+      let! response = httpClient.SendAsync(request, defaultArg cancellationToken ambientToken) |> Async.AwaitTask
+      response.EnsureSuccessStatusCode() |> ignore<HttpResponseMessage>
 
-    let statusCode = HttpStatusCode.BadRequest
-    match response.Headers.TryGetValues "X-akismet-alert-msg" with
-    | false, _ -> ()
-    | true, value -> raise (HttpRequestException(nonNull value |> Seq.head, null, statusCode))
-    match response.Headers.TryGetValues "X-akismet-debug-help" with
-    | false, _ -> ()
-    | true, value -> raise (HttpRequestException(nonNull value |> Seq.head, null, statusCode))
+      let statusCode = HttpStatusCode.BadRequest
+      match response.Headers.TryGetValues "X-akismet-alert-msg" with
+      | false, _ -> ()
+      | true, header -> raise (HttpRequestException(nonNull header |> Seq.head, null, statusCode))
+      match response.Headers.TryGetValues "X-akismet-debug-help" with
+      | false, _ -> ()
+      | true, header -> raise (HttpRequestException(nonNull header |> Seq.head, null, statusCode))
 
-    return response
+      return Ok response
+    with
+    | :? HttpRequestException as ex -> return Error ex
+    | :? AggregateException as ex ->
+      match ex.InnerException with
+      | :? HttpRequestException as innerEx -> return Error innerEx
+      | _ -> return raise (ex.Flatten())
   }
