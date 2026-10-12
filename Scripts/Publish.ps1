@@ -7,6 +7,5 @@ else {
 }
 
 "Publishing the package..."
-$version = (Import-PowerShellDataFile Akismet.psd1).ModuleVersion
-New-GitTag "v$version"
+New-GitTag "v$(Get-Version)"
 Publish-NuGetPackage -NoBuild

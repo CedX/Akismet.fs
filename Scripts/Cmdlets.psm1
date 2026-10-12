@@ -17,6 +17,17 @@ function Build-DotNetSolution {
 
 <#
 .SYNOPSIS
+	Returns the solution version number.
+.OUTPUTS
+	The solution version number.
+#>
+function Get-Version {
+	$xml = [xml] (Get-Content "$PSScriptRoot/../Akismet.slnx" -Raw)
+	[semver] $xml.Solution.ProjectVersion
+}
+
+<#
+.SYNOPSIS
 	Invokes the .NET test runner.
 #>
 function Invoke-DotNetTest {
