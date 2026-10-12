@@ -5,7 +5,7 @@ open System.Text
 
 /// Tests the features of the `Blog` class.
 [<TestClass>]
-type BlogTests () =
+type BlogTests() =
 
   [<TestMethod>]
   member _.ToDictionary () =

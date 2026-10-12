@@ -5,7 +5,7 @@ open System
 
 /// Tests the features of the `Author` class.
 [<TestClass>]
-type AuthorTests () =
+type AuthorTests() =
 
   [<TestMethod>]
   member _.ToDictionary () =

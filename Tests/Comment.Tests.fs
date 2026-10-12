@@ -6,7 +6,7 @@ open System.Globalization
 
 /// Tests the features of the `Comment` class.
 [<TestClass>]
-type CommentTests () =
+type CommentTests() =
 
   [<TestMethod>]
   member _.ToDictionary () =
