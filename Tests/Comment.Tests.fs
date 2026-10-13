@@ -9,7 +9,7 @@ open System.Globalization
 type CommentTests() =
 
   [<TestMethod>]
-  member _.ToDictionary () =
+  member _.ToDictionary() =
     // It should return only the author info with a newly created instance.
     let mutable dictionary = Comment(Author "127.0.0.1").ToDictionary()
     dictionary.Count |> Should.be 1

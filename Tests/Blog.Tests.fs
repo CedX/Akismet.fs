@@ -8,7 +8,7 @@ open System.Text
 type BlogTests() =
 
   [<TestMethod>]
-  member _.ToDictionary () =
+  member _.ToDictionary() =
     // It should return only the blog URL with a newly created instance.
     let mutable dictionary = (Blog "https://github.com/CedX/Akismet.fs").ToDictionary()
     dictionary.Count |> Should.be 1

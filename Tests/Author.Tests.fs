@@ -8,7 +8,7 @@ open System
 type AuthorTests() =
 
   [<TestMethod>]
-  member _.ToDictionary () =
+  member _.ToDictionary() =
     // It should return only the IP address with a newly created instance.
     let mutable dictionary = (Author "127.0.0.1").ToDictionary()
     dictionary.Count |> Should.be 1

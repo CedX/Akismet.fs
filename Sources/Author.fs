@@ -26,7 +26,7 @@ type Author(ipAddress: IPAddress) =
   member val UserAgent = "" with get, set
 
   /// Creates a new author.
-  new(ipAddress: string) = Author(IPAddress.Parse ipAddress)
+  new (ipAddress: string) = Author(IPAddress.Parse ipAddress)
 
   /// Converts this author to a dictionary.
   member internal this.ToDictionary(): IDictionary<string, string> =

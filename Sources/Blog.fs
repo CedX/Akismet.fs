@@ -17,7 +17,7 @@ type Blog(url: Uri) =
   member val Url: Uri = url with get, set
 
   /// Creates a new blog.
-  new(url: string) = Blog(Uri(url, UriKind.Absolute))
+  new (url: string) = Blog(Uri(url, UriKind.Absolute))
 
   /// Converts this blog to a dictionary.
   member internal this.ToDictionary(): IDictionary<string, string> =
