@@ -47,7 +47,8 @@ type Client(apiKey: string, blog: Blog) =
   member this.CheckCommentAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<CheckResult, HttpRequestException>> = async {
     match! this.PostAsync("1.1/comment-check", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok response ->
+    | Ok httpResponse ->
+      use response = httpResponse
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
       | "false" -> return Ok Ham
       | _ ->
@@ -64,7 +65,8 @@ type Client(apiKey: string, blog: Blog) =
   member this.SubmitHamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
     match! this.PostAsync("1.1/submit-ham", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok response ->
+    | Ok httpResponse ->
+      use response = httpResponse
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
       | body when body = success -> return Ok ()
       | _ -> return Error (HttpRequestException "Invalid server response.")
@@ -78,7 +80,8 @@ type Client(apiKey: string, blog: Blog) =
   member this.SubmitSpamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
     match! this.PostAsync("1.1/submit-spam", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok response ->
+    | Ok httpResponse ->
+      use response = httpResponse
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
       | body when body = success -> return Ok ()
       | _ -> return Error (HttpRequestException "Invalid server response.")
@@ -89,17 +92,18 @@ type Client(apiKey: string, blog: Blog) =
     this.SubmitSpamAsync(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
-  member this.VerifyKey(?cancellationToken: CancellationToken): Result<bool, HttpRequestException> =
-    this.VerifyKeyAsync(?cancellationToken = cancellationToken) |> Async.RunSynchronously
-
-  /// Checks the API key against the service database, and returns a value indicating whether it is valid.
   member this.VerifyKeyAsync(?cancellationToken: CancellationToken): Async<Result<bool, HttpRequestException>> = async {
     match! this.PostAsync("1.1/verify-key", ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok response ->
+    | Ok httpResponse ->
+      use response = httpResponse
       let! body = response.Content.ReadAsStringAsync() |> Async.AwaitTask
       return Ok (body = "valid")
   }
+
+  /// Checks the API key against the service database, and returns a value indicating whether it is valid.
+  member this.VerifyKey(?cancellationToken: CancellationToken): Result<bool, HttpRequestException> =
+    this.VerifyKeyAsync(?cancellationToken = cancellationToken) |> Async.RunSynchronously
 
   /// Releases any resources associated with this object.
   member private _.Dispose(disposing: bool) =
