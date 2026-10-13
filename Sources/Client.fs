@@ -65,13 +65,10 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Submits the specified comment that was incorrectly marked as spam but should not have been.
   member this.SubmitHamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
-    match! this.PostAsync("1.1/submit-ham", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
+    let! result = this.PostAsync("1.1/submit-ham", comment.ToDictionary(), ?cancellationToken = cancellationToken)
+    match! Client.ReadHttpContent result with
     | Error error -> return Error error
-    | Ok message ->
-      use response = message
-      match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
-      | body when body = Thanks -> return Ok ()
-      | _ -> return Error (HttpRequestException "Invalid server response.")
+    | Ok content -> return match content with Thanks -> Ok () | _ -> Error (HttpRequestException "Invalid server response.")
   }
 
   /// Submits the specified comment that was incorrectly marked as spam but should not have been.
@@ -80,13 +77,10 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Submits the specified comment that was not marked as spam but should have been.
   member this.SubmitSpamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
-    match! this.PostAsync("1.1/submit-spam", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
+    let! result = this.PostAsync("1.1/submit-spam", comment.ToDictionary(), ?cancellationToken = cancellationToken)
+    match! Client.ReadHttpContent result with
     | Error error -> return Error error
-    | Ok message ->
-      use response = message
-      match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
-      | body when body = Thanks -> return Ok ()
-      | _ -> return Error (HttpRequestException "Invalid server response.")
+    | Ok content -> return match content with Thanks -> Ok () | _ -> Error (HttpRequestException "Invalid server response.")
   }
 
   /// Submits the specified comment that was not marked as spam but should have been.
@@ -95,12 +89,10 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
   member this.VerifyKeyAsync(?cancellationToken: CancellationToken): Async<Result<bool, HttpRequestException>> = async {
-    match! this.PostAsync("1.1/verify-key", ?cancellationToken = cancellationToken) with
+    let! result = this.PostAsync("1.1/verify-key", ?cancellationToken = cancellationToken)
+    match! Client.ReadHttpContent result with
     | Error error -> return Error error
-    | Ok message ->
-      use response = message
-      let! body = response.Content.ReadAsStringAsync() |> Async.AwaitTask
-      return Ok (body = "valid")
+    | Ok content -> return Ok (content = "valid")
   }
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
@@ -155,3 +147,13 @@ type Client(apiKey: string, blog: Blog) =
       | null -> None
       | values when Seq.isEmpty values -> None
       | values -> values |> Seq.head |> Some
+
+  /// Serializes the HTTP content of the specified result to a string.
+  static member private ReadHttpContent(result: Result<HttpResponseMessage, HttpRequestException>) = async {
+    match result with
+    | Error error -> return Error error
+    | Ok message ->
+      use response = message
+      let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask
+      return Ok content
+  }
