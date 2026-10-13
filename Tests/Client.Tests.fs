@@ -2,6 +2,7 @@ namespace Belin.Akismet
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System
+open System.Net.Http
 
 /// Tests the features of the `Client` class.
 [<TestClass>]
@@ -16,7 +17,8 @@ type ClientTests(testContext: TestContext) =
 
   /// A comment with content marked as ham.
   static let ham = Comment(
-    Author("192.168.0.1",
+    Author(
+      "192.168.0.1",
       Name = "Akismet",
       Role = AuthorRole.Administrator,
       Url = Some (Uri "https://cedric-belin.fr"),
@@ -28,7 +30,8 @@ type ClientTests(testContext: TestContext) =
 
   /// A comment with content marked as spam.
   static let spam = Comment(
-    Author("127.0.0.1",
+    Author(
+      "127.0.0.1",
       Email = "akismet-guaranteed-spam@example.com",
       Name = "viagra-test-123",
       UserAgent = "Spam Bot/6.6.6"),
@@ -44,7 +47,7 @@ type ClientTests(testContext: TestContext) =
   [<TestMethod>]
   member _.CheckComment() =
     client.CheckComment(ham, testContext.CancellationToken) |> Should.be (Ok Ham)
-    client.CheckComment(spam, testContext.CancellationToken) |> Should.beOneOf [Ok Spam, Ok PervasiveSpam]
+    client.CheckComment(spam, testContext.CancellationToken) |> Should.beOneOf ([Ok Spam; Ok PervasiveSpam] :> Result<CheckResult, HttpRequestException> seq)
 
   [<TestMethod>]
   member _.SubmitHam() =

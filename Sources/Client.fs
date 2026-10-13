@@ -1,9 +1,11 @@
 namespace Belin.Akismet
+// fsharplint:disable TupleCommaSpacing
 
 open System
 open System.Collections.Generic
 open System.Net
 open System.Net.Http
+open System.Net.Http.Headers
 open System.Threading
 
 /// Submits comments to the Akismet service.
@@ -11,7 +13,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// The response returned by the `submit-ham` and `submit-spam` endpoints when the outcome is a success.
   [<Literal>]
-  static let thanks = "Thanks for making the web a better place."
+  static let Thanks = "Thanks for making the web a better place."
 
   /// The assembly version.
   static let version = nonNull (typeof<Client>.Assembly.GetName().Version)
@@ -47,14 +49,14 @@ type Client(apiKey: string, blog: Blog) =
   member this.CheckCommentAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<CheckResult, HttpRequestException>> = async {
     match! this.PostAsync("1.1/comment-check", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok httpResponse ->
-      use response = httpResponse
+    | Ok message ->
+      use response = message
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
       | "false" -> return Ok Ham
       | _ ->
-        match response.Headers.TryGetValues "X-akismet-pro-tip" with
-        | false, _ -> return Ok Spam
-        | true, header -> return Ok (if nonNull header |> Seq.head = "discard" then PervasiveSpam else Spam)
+        match Client.GetHttpHeader response.Headers "X-akismet-pro-tip" with
+        | Some header when header = "discard" -> return Ok PervasiveSpam
+        | _ -> return Ok Spam
   }
 
   /// Checks the specified comment against the service database, and returns a value indicating whether it is spam.
@@ -65,10 +67,10 @@ type Client(apiKey: string, blog: Blog) =
   member this.SubmitHamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
     match! this.PostAsync("1.1/submit-ham", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok httpResponse ->
-      use response = httpResponse
+    | Ok message ->
+      use response = message
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
-      | body when body = thanks -> return Ok ()
+      | body when body = Thanks -> return Ok ()
       | _ -> return Error (HttpRequestException "Invalid server response.")
   }
 
@@ -80,10 +82,10 @@ type Client(apiKey: string, blog: Blog) =
   member this.SubmitSpamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
     match! this.PostAsync("1.1/submit-spam", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok httpResponse ->
-      use response = httpResponse
+    | Ok message ->
+      use response = message
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
-      | body when body = thanks -> return Ok ()
+      | body when body = Thanks -> return Ok ()
       | _ -> return Error (HttpRequestException "Invalid server response.")
   }
 
@@ -95,8 +97,8 @@ type Client(apiKey: string, blog: Blog) =
   member this.VerifyKeyAsync(?cancellationToken: CancellationToken): Async<Result<bool, HttpRequestException>> = async {
     match! this.PostAsync("1.1/verify-key", ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok httpResponse ->
-      use response = httpResponse
+    | Ok message ->
+      use response = message
       let! body = response.Content.ReadAsStringAsync() |> Async.AwaitTask
       return Ok (body = "valid")
   }
@@ -112,6 +114,7 @@ type Client(apiKey: string, blog: Blog) =
       disposed <- true
 
   /// Queries the service by posting the specified fields to a given end point, and returns the response.
+  // fsharplint:disable-next-line MaxCharactersOnLine
   member private this.PostAsync(requestUri: string, ?fields: IDictionary<string, string>, ?cancellationToken: CancellationToken): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
     let body = this.Blog.ToDictionary()
     body.Add("api_key", this.ApiKey)
@@ -127,12 +130,12 @@ type Client(apiKey: string, blog: Blog) =
       response.EnsureSuccessStatusCode() |> ignore<HttpResponseMessage>
 
       let statusCode = HttpStatusCode.BadRequest
-      match response.Headers.TryGetValues "X-akismet-alert-msg" with
-      | false, _ -> ()
-      | true, header -> raise (HttpRequestException(nonNull header |> Seq.head, null, statusCode))
-      match response.Headers.TryGetValues "X-akismet-debug-help" with
-      | false, _ -> ()
-      | true, header -> raise (HttpRequestException(nonNull header |> Seq.head, null, statusCode))
+      match Client.GetHttpHeader response.Headers "X-akismet-alert-msg" with
+      | None -> ()
+      | Some header -> raise (HttpRequestException(header, null, statusCode))
+      match Client.GetHttpHeader response.Headers "X-akismet-debug-help" with
+      | None -> ()
+      | Some header -> raise (HttpRequestException(header, null, statusCode))
 
       return Ok response
     with
@@ -142,3 +145,13 @@ type Client(apiKey: string, blog: Blog) =
       | :? HttpRequestException as innerEx -> return Error innerEx
       | _ -> return raise (ex.Flatten())
   }
+
+  /// Gets the value of the HTTP header with the specified name.
+  static member private GetHttpHeader (headers: HttpResponseHeaders) (name: string): string option =
+    match headers.TryGetValues name with
+    | false, _ -> None
+    | true, header ->
+      match header with
+      | null -> None
+      | values when Seq.isEmpty values -> None
+      | values -> values |> Seq.head |> Some

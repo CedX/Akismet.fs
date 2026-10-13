@@ -15,7 +15,8 @@ type AuthorTests() =
     dictionary["user_ip"] |> Should.be "127.0.0.1"
 
     // It should return a non-empty map with an initialized instance.
-    let author = Author("192.168.0.1",
+    let author = Author(
+      "192.168.0.1",
       Name = "Cédric Belin",
       Email = "contact@cedric-belin.fr",
       Url = Some(Uri "https://cedric-belin.fr"),
