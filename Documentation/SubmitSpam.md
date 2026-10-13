@@ -35,20 +35,17 @@ It can also fault with a custom error message (provided by the `X-akismet-alert-
 See [Response Error Codes](https://akismet.com/developers/detailed-docs/errors) for more information.
 
 ## Example
+
 ```fsharp
 open Belin.Akismet
-open System.Net.Http
 
-try {
-  var author = new Author(ipAddress: "192.168.123.456") { UserAgent = "Spam Bot/6.6.6" };
-  var comment = new Comment(author) { Content = "Spam!" };
+async {
+  let author = Author("192.168.123.456", UserAgent = "Spam Bot/6.6.6")
+  let comment = Comment(author, Content = "Spam!")
 
-  var client = new Client("123YourAPIKey", "https://www.yourblog.com");
-  await client.SubmitSpam(comment);
-
-  Console.WriteLine("The comment was successfully submitted as spam.");
-}
-catch (HttpRequestException e) {
-  Console.Error.WriteLine($"An error occurred: {e.Message}");
+  use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
+  match! client.SubmitSpamAsync comment with
+  | Ok () -> printfn "The comment was successfully submitted as spam."
+  | Error error -> printfn $"An error occurred: {error.Message}"
 }
 ```

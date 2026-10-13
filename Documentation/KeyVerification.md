@@ -30,15 +30,13 @@ See [Response Error Codes](https://akismet.com/developers/detailed-docs/errors) 
 
 ```fsharp
 open Belin.Akismet
-open System.Net.Http
 
-try {
-  var client = new Client("123YourAPIKey", "https://www.yourblog.com");
-  var isValid = await client.VerifyKey();
-  Console.WriteLine(isValid ? "The API key is valid." : "The API key is invalid.");
-}
-catch (HttpRequestException e) {
-  Console.Error.WriteLine($"An error occurred: {e.Message}");
+async {
+  use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
+  match! client.VerifyKeyAsync() with
+  | Ok true -> printfn "The API key is valid."
+  | Ok false -> printfn "The API key is invalid."
+  | Error error -> printfn $"An error occurred: {error.Message}"
 }
 ```
 

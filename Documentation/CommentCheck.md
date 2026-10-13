@@ -35,32 +35,36 @@ It can also fault with a custom error message (provided by the `X-akismet-alert-
 See [Response Error Codes](https://akismet.com/developers/detailed-docs/errors) for more information.
 
 ## Example
+
 ```fsharp
 open Belin.Akismet
-open System.Net.Http
+open System
 open System.Text
 
-try {
-  var author = new Author(ipAddress: "192.168.123.456") {
+async {
+  let author = Author(
+    "192.168.123.456",
     Email = "john.doe@domain.com",
     Name = "John Doe",
     Role = "guest",
     UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
-  };
+  )
 
-  var comment = new Comment(author) {
+  let comment = Comment(
+    author,
     Content = "A user comment.",
-    Date = DateTime.Now,
-    Referrer = new Uri("https://github.com/CedX/Akismet.fs"),
+    Date = Some DateTime.Now,
+    Referrer = Some (Uri "https://github.com/CedX/Akismet.fs"),
     Type = CommentType.ContactForm
-  };
+  )
 
-  var blog = new Blog("https://www.yourblog.com") { Charset = Encoding.UTF8, Languages = ["fr"] };
-  var result = await new Client("123YourAPIKey", blog).CheckComment(comment);
-  Console.WriteLine(result == CheckResult.Ham ? "The comment is ham." : "The comment is spam.");
-}
-catch (HttpRequestException e) {
-  Console.Error.WriteLine($"An error occurred: {e.Message}");
+  let blog = Blog("https://www.yourblog.com", Charset = Some Encoding.UTF8, Languages = ["fr"])
+  use client = new Client("123YourAPIKey", blog)
+
+  match! client.CheckCommentAsync comment with
+  | Ok Ham -> printfn "The comment is ham."
+  | Ok Spam | Ok PervasiveSpam -> printfn "The comment is spam."
+  | Error error -> printfn $"An error occurred: {error.Message}"
 }
 ```
 
