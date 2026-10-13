@@ -4,7 +4,7 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 
 /// Contains assertions for working with unit tests.
 [<RequireQualifiedAccess>]
-module Should =
+module internal Should =
 
   /// Tests whether the specified values are equal.
   let inline be (expected: 'T) (actual: 'T) =
