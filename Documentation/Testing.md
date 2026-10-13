@@ -13,16 +13,14 @@ If you receive anything else, something is wrong in your client, data, or commun
 ```fsharp
 open Belin.Akismet
 
-var author = new Author(ipAddress: "127.0.0.1") {
-  Name = "viagra-test-123",
-  UserAgent = "Mozilla/5.0"
-};
+async {
+  let author = Author("127.0.0.1", Name = "viagra-test-123", UserAgent = "Mozilla/5.0")
+  let comment = Comment(author, Content = "A user comment.")
 
-var client = new Client("123YourAPIKey", "https://www.yourblog.com");
-var comment = new Comment(author) { Content = "A user comment." };
-
-var result = await client.CheckComment(comment);
-Console.WriteLine($"It should be `CheckResult.Spam`: {result}");
+  use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
+  let! result = client.CheckCommentAsync comment
+  printfn $"It should be `Ok Spam`: {result}"
+}
 ```
 
 ## Simulate a negative result (ham)
@@ -34,16 +32,14 @@ The Akismet API will always return a `CheckResult.Ham` response. Any other respo
 ```fsharp
 open Belin.Akismet
 
-var author = new Author(ipAddress: "127.0.0.1") {
-  Role = AuthorRole.Administrator,
-  UserAgent = "Mozilla/5.0"
-};
+async {
+  let author = Author("127.0.0.1", Role = AuthorRole.Administrator, UserAgent = "Mozilla/5.0")
+  let comment = Comment(author, Content = "A user comment.")
 
-var client = new Client("123YourAPIKey", "https://www.yourblog.com");
-var comment = new Comment(author) { Content = "A user comment." };
-
-var result = await client.CheckComment(comment);
-Console.WriteLine($"It should be `CheckResult.Ham`: {result}");
+  use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
+  let! result = client.CheckCommentAsync comment
+  printfn $"It should be `Ok Ham`: {result}"
+}
 ```
 
 ## Automated testing
@@ -55,10 +51,10 @@ That means your tests will be somewhat repeatable, in the sense that one test wo
 ```fsharp
 open Belin.Akismet
 
-var author = new Author(ipAddress: "127.0.0.1") { UserAgent = "Mozilla/5.0" };
-var comment = new Comment(author) { Content = "A user comment." };
+let author = Author("127.0.0.1", UserAgent = "Mozilla/5.0")
+let comment = Comment(author, Content = "A user comment.")
 
 // It should not influence subsequent calls.
-var client = new Client("123YourAPIKey", "https://www.yourblog.com") { IsTest = true };
-await client.CheckComment(comment);
+use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com", IsTest = true)
+client.CheckCommentAsync comment |> Async.Ignore |> Async.RunSynchronously
 ```

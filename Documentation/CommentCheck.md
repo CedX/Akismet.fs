@@ -10,28 +10,29 @@ so artificially generating spam comments is not a viable approach.
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/comment-check) for more information.
 
 ```fsharp
-Task<CheckResult> Client.CheckComment(Comment comment, CancellationToken cancellationToken = default)
+member Client.CheckCommentAsync: Comment * CancellationToken opt
+  -> Async<Result<CheckResult, HttpRequestException>>
 ```
 
 ## Parameters
 
-### Comment **comment**
+### **comment**: Comment
 The `Comment` providing the user's message to be checked.
 
-### CancellationToken **cancellationToken**
+### **?cancellationToken** CancellationToken
 The token to cancel the operation.
 
 ## Return value
-A `Task` that completes with a `CheckResult` value indicating whether the given `Comment` is ham, spam or pervasive spam.
+An `Async<Result>` that completes with a `CheckResult` value indicating whether the given `Comment` is ham, spam or pervasive spam.
 
 > [!TIP]
 > A comment classified as pervasive spam can be safely discarded.
 
-The task faults with a `HttpRequestException` when an issue occurs.
+The result fails with an `Error (HttpRequestException)` when an issue occurs.
 The exception `Message` usually includes some debug information, provided by the `X-akismet-debug-help` HTTP header,
 about what exactly was invalid about the call.
 
-It can also fault with a custom error message (provided by the `X-akismet-alert-msg` header).
+It can also fail with a custom error message (provided by the `X-akismet-alert-msg` header).
 See [Response Error Codes](https://akismet.com/developers/detailed-docs/errors) for more information.
 
 ## Example

@@ -8,22 +8,23 @@ if you will have multiple users with their own Akismet subscriptions using your 
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/key-verification) for more information.
 
 ```fsharp
-Task<bool> Client.VerifyKey(CancellationToken cancellationToken = default)
+member Client.VerifyKey: CancellationToken opt
+  -> Async<Result<bool, HttpRequestException>>
 ```
 
 ## Parameters
 
-### CancellationToken **cancellationToken**
+### **?cancellationToken** CancellationToken
 The token to cancel the operation.
 
 ## Return value
-A `Task` that completes with a boolean value indicating whether the client's API key is valid.
+An `Async<Result>` that completes with a boolean value indicating whether the client's API key is valid.
 
-The task faults with a `HttpRequestException` when an issue occurs.
+The result fails with an `Error (HttpRequestException)` when an issue occurs.
 The exception `Message` usually includes some debug information, provided by the `X-akismet-debug-help` HTTP header,
 about what exactly was invalid about the call.
 
-It can also fault with a custom error message (provided by the `X-akismet-alert-msg` header).
+It can also fail with a custom error message (provided by the `X-akismet-alert-msg` header).
 See [Response Error Codes](https://akismet.com/developers/detailed-docs/errors) for more information.
 
 ## Example
