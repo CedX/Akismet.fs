@@ -10,7 +10,7 @@ type ClientTests(testContext: TestContext) =
   /// The client used to query the remote API.
   static let client = new Client(
     nonNull (Environment.GetEnvironmentVariable "AKISMET_API_KEY"),
-    Blog "https://github.com/CedX/Akismet.net",
+    Blog "https://github.com/CedX/Akismet.fs",
     IsTest = true
   )
 

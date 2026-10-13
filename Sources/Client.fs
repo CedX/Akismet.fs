@@ -11,7 +11,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// The response returned by the `submit-ham` and `submit-spam` endpoints when the outcome is a success.
   [<Literal>]
-  static let success = "Thanks for making the web a better place."
+  static let thanks = "Thanks for making the web a better place."
 
   /// The assembly version.
   static let version = nonNull (typeof<Client>.Assembly.GetName().Version)
@@ -68,7 +68,7 @@ type Client(apiKey: string, blog: Blog) =
     | Ok httpResponse ->
       use response = httpResponse
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
-      | body when body = success -> return Ok ()
+      | body when body = thanks -> return Ok ()
       | _ -> return Error (HttpRequestException "Invalid server response.")
   }
 
@@ -83,7 +83,7 @@ type Client(apiKey: string, blog: Blog) =
     | Ok httpResponse ->
       use response = httpResponse
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
-      | body when body = success -> return Ok ()
+      | body when body = thanks -> return Ok ()
       | _ -> return Error (HttpRequestException "Invalid server response.")
   }
 
