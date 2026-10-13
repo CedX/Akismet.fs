@@ -8,7 +8,7 @@ if you will have multiple users with their own Akismet subscriptions using your 
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/key-verification) for more information.
 
 ```fsharp
-member Client.VerifyKey: CancellationToken opt
+member Client.VerifyKey: CancellationToken option
   -> Async<Result<bool, HttpRequestException>>
 ```
 

@@ -10,7 +10,7 @@ you should ensure that the values that you do send match those of the original c
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/submit-spam-missed-spam) for more information.
 
 ```fsharp
-member Client.SubmitSpam: Comment * CancellationToken opt
+member Client.SubmitSpam: Comment * CancellationToken option
   -> Async<Result<unit, HttpRequestException>>
 ```
 

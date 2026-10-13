@@ -8,7 +8,7 @@ that any values you're passing here match up with the original and corresponding
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/submit-ham-false-positives) for more information.
 
 ```fsharp
-member Client.SubmitHam: Comment * CancellationToken opt
+member Client.SubmitHam: Comment * CancellationToken option
   -> Async<Result<unit, HttpRequestException>>
 ```
 
