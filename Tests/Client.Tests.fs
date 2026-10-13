@@ -44,7 +44,7 @@ type ClientTests(testContext: TestContext) =
   [<TestMethod>]
   member _.CheckComment() =
     client.CheckComment(ham, testContext.CancellationToken) |> Should.be (Ok Ham)
-    // TODO client.CheckComment(spam, testContext.CancellationToken).ShouldBeOneOf([CheckResult.Spam, CheckResult.PervasiveSpam]);
+    client.CheckComment(spam, testContext.CancellationToken) |> Should.beOneOf [Ok Spam, Ok PervasiveSpam]
 
   [<TestMethod>]
   member _.SubmitHam() =
