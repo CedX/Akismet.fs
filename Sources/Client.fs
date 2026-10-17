@@ -49,8 +49,8 @@ type Client(apiKey: string, blog: Blog) =
   member this.CheckCommentAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<CheckResult, HttpRequestException>> = async {
     match! this.PostAsync("1.1/comment-check", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
-    | Ok message ->
-      use response = message
+    | Ok disposable ->
+      use response = disposable
       match! response.Content.ReadAsStringAsync() |> Async.AwaitTask with
       | "false" -> return Ok Ham
       | _ ->
@@ -152,8 +152,8 @@ type Client(apiKey: string, blog: Blog) =
   static member private ReadHttpContent(result: Result<HttpResponseMessage, HttpRequestException>) = async {
     match result with
     | Error error -> return Error error
-    | Ok message ->
-      use response = message
+    | Ok disposable ->
+      use response = disposable
       let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask
       return Ok content
   }
