@@ -34,7 +34,7 @@ type Comment(author: Author) =
   member val Type = "" with get, set
 
   /// Converts this comment to a dictionary.
-  member internal this.ToDictionary(): IDictionary<string, string> =
+  member internal this.ToDictionary(): Dictionary<string, string> =
     let dictionary = this.Author.ToDictionary()
     if not (String.IsNullOrWhiteSpace this.Content) then dictionary.Add("comment_content", this.Content)
     // TODO if not this.Context.IsEmpty then dictionary.Add("comment_context", this.Context |> String.concat ",")

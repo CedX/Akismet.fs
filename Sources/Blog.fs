@@ -20,7 +20,7 @@ type Blog(url: Uri) =
   new (url: string) = Blog(Uri(url, UriKind.Absolute))
 
   /// Converts this blog to a dictionary.
-  member internal this.ToDictionary(): IDictionary<string, string> =
+  member internal this.ToDictionary(): Dictionary<string, string> =
     let dictionary = Dictionary<string, string>()
     dictionary.Add("blog", string this.Url)
     match this.Charset with None -> () | Some charset -> dictionary.Add("blog_charset", charset.WebName)

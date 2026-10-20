@@ -107,7 +107,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Queries the service by posting the specified fields to a given end point, and returns the response.
   // fsharplint:disable-next-line MaxCharactersOnLine
-  member private this.PostAsync(requestUri: string, ?fields: IDictionary<string, string>, ?cancellationToken: CancellationToken): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
+  member private this.PostAsync(requestUri: string, ?fields: Dictionary<string, string>, ?cancellationToken: CancellationToken): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
     let body = this.Blog.ToDictionary()
     body.Add("api_key", this.ApiKey)
     if this.IsTest then body.Add("is_test", "1")

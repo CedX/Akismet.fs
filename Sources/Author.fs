@@ -29,7 +29,7 @@ type Author(ipAddress: IPAddress) =
   new (ipAddress: string) = Author(IPAddress.Parse ipAddress)
 
   /// Converts this author to a dictionary.
-  member internal this.ToDictionary(): IDictionary<string, string> =
+  member internal this.ToDictionary(): Dictionary<string, string> =
     let dictionary = Dictionary<string, string>()
     dictionary.Add("user_ip", string this.IPAddress)
     if not (String.IsNullOrWhiteSpace this.Email) then dictionary.Add("comment_author_email", this.Email)
