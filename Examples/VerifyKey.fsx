@@ -1,4 +1,4 @@
-#r "../Binaries/Belin.Akismet.FSharp.dll" // TODO "nuget: Belin.Akismet.FSharp"
+#r "nuget: Belin.Akismet.FSharp"
 open Belin.Akismet
 
 // Verifies an Akismet API key.
