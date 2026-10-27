@@ -13,7 +13,7 @@ startProcess "git" $"push origin v{Version}"
 writeOutput "Publishing the package..."
 startProcess "dotnet" "pack --no-build --output Temp/NuGet"
 
-let nugetApiKey = Environment.GetEnvironmentVariable "NUGET_API_KEY"
+let apiKey = Environment.GetEnvironmentVariable "NUGET_API_KEY"
 Directory.EnumerateFiles("Temp/NuGet", "*.nupkg")
-|> Seq.map (fun file -> $@"nuget push ""{file}"" --api-key {nugetApiKey} --source NuGet")
+|> Seq.map (fun file -> $@"nuget push ""{file}"" --api-key {apiKey} --source NuGet")
 |> Seq.iter (fun arguments -> startProcess "dotnet" arguments)
