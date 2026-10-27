@@ -3,8 +3,8 @@ open System
 open System.IO
 open Tools
 
-if IsRelease then startProcess "dotnet" "fsi Scripts/Default.fsx -Release"
-else writeError @"The ""-Release"" switch must be set!"
+if IsRelease then startProcess "dotnet" "fsi Scripts/Default.fsx --release"
+else writeError @"The ""--release"" switch must be set!"
 
 writeOutput "Tagging the repository..."
 startProcess "git" $"tag v{Version}"

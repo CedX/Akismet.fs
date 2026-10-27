@@ -9,7 +9,7 @@ module Tools =
 
   /// Value indicating whether the requested configuration is "Release".
   let IsRelease: bool =
-    fsi.CommandLineArgs |> Array.tail |> Array.exists (fun arg -> arg.Equals("-release", StringComparison.OrdinalIgnoreCase))
+    fsi.CommandLineArgs |> Array.tail |> Array.exists (fun arg -> arg.Equals("--release", StringComparison.OrdinalIgnoreCase))
 
   /// The configuration to use for project generation.
   let Configuration: string =
