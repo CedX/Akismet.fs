@@ -9,7 +9,7 @@ module Tools =
 
   /// Value indicating whether the requested configuration is "Release".
   let IsRelease: bool =
-    fsi.CommandLineArgs |> Array.tail |> Array.exists (fun arg -> arg.ToLower() = "-release")
+    fsi.CommandLineArgs |> Array.tail |> Array.exists (fun arg -> arg.Equals("-release", StringComparison.OrdinalIgnoreCase))
 
   /// The configuration to use for project generation.
   let Configuration: string =
@@ -21,7 +21,7 @@ module Tools =
 
   /// The project version number.
   let Version: Version =
-    let defaultValue = Version.Parse "0.0.0"
+    let defaultValue = Version(0, 0, 0)
     match Solution.FullName |> XDocument.Load |> _.Root with
     | null -> defaultValue
     | element -> match element.Attribute "ProjectVersion" with null -> defaultValue | attribute -> Version.Parse attribute.Value
@@ -49,7 +49,7 @@ module Tools =
   /// Invokes the specified command.
   let startProcess (command: string) (arguments: string) =
     try
-      let startedProcess = Process.Start(command, arguments)
+      use startedProcess = Process.Start(command, arguments)
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then failwith ($"Command failed: {command} {arguments}".TrimEnd())
     with
