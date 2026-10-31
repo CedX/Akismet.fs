@@ -21,10 +21,9 @@ module Tools =
 
   /// The project version number.
   let Version: Version =
-    let defaultValue = Version(0, 0, 0)
-    match Solution.FullName |> XDocument.Load |> _.Root with
-    | null -> defaultValue
-    | element -> match element.Attribute "ProjectVersion" with null -> defaultValue | attribute -> Version.Parse attribute.Value
+    XDocument.Load(Path.Join(Environment.CurrentDirectory, "Package.xml")).Descendants "Version"
+    |> Seq.exactlyOne
+    |> fun element -> Version.Parse element.Value
 
   /// Deletes the file system entry located at the specified path.
   let removeItem (path: string) =
