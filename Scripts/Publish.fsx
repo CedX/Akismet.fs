@@ -3,7 +3,8 @@ open System
 open System.IO
 open Tools
 
-if IsRelease then startProcess "dotnet" "fsi Scripts/Default.fsx --release"
+let isRelease = IsRelease // Prevents a parsing bug in FSharpLint.
+if isRelease then startProcess "dotnet" "fsi Scripts/Default.fsx --release"
 else writeError @"The ""--release"" switch must be set!"
 
 writeOutput "Tagging the repository..."
