@@ -10,7 +10,7 @@ so artificially generating spam comments is not a viable approach.
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/comment-check) for more information.
 
 ```fsharp
-member Client.CheckCommentAsync: Comment * CancellationToken option
+member Client.AsyncCheckComment: Comment * CancellationToken option
   -> Async<Result<CheckResult, HttpRequestException>>
 ```
 
@@ -62,7 +62,7 @@ async {
   let blog = Blog("https://www.yourblog.com", Charset = Some Encoding.UTF8, Languages = ["fr"])
   use client = new Client("123YourAPIKey", blog)
 
-  match! client.CheckCommentAsync comment with
+  match! client.AsyncCheckComment comment with
   | Ok Ham -> printfn "The comment is ham."
   | Ok Spam | Ok PervasiveSpam -> printfn "The comment is spam."
   | Error error -> printfn $"An error occurred: {error.Message}"

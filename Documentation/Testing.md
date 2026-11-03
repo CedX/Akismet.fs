@@ -18,7 +18,7 @@ async {
   let comment = Comment(author, Content = "A user comment.")
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
-  let! result = client.CheckCommentAsync comment
+  let! result = client.AsyncCheckComment comment
   printfn $"It should be `Ok Spam`: {result}"
 }
 ```
@@ -37,7 +37,7 @@ async {
   let comment = Comment(author, Content = "A user comment.")
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
-  let! result = client.CheckCommentAsync comment
+  let! result = client.AsyncCheckComment comment
   printfn $"It should be `Ok Ham`: {result}"
 }
 ```
@@ -56,5 +56,5 @@ let comment = Comment(author, Content = "A user comment.")
 
 // It should not influence subsequent calls.
 use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com", IsTest = true)
-client.CheckCommentAsync comment |> Async.Ignore |> Async.RunSynchronously
+client.AsyncCheckComment comment |> Async.Ignore |> Async.RunSynchronously
 ```

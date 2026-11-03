@@ -7,7 +7,7 @@ async {
   let comment = Comment(author, Content = "I'm testing out the Service API.")
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
-  match! client.SubmitHamAsync comment with
+  match! client.AsyncSubmitHam comment with
   | Ok () -> printfn "The comment was successfully submitted as ham."
   | Error error -> printfn $"An error occurred: {error.Message}"
 }

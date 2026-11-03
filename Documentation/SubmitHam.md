@@ -8,7 +8,7 @@ that any values you're passing here match up with the original and corresponding
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/submit-ham-false-positives) for more information.
 
 ```fsharp
-member Client.SubmitHam: Comment * CancellationToken option
+member Client.AsyncSubmitHam: Comment * CancellationToken option
   -> Async<Result<unit, HttpRequestException>>
 ```
 
@@ -43,7 +43,7 @@ async {
   let comment = Comment(author, Content = "I'm testing out the Service API.")
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
-  match! client.SubmitHamAsync comment with
+  match! client.AsyncSubmitHam comment with
   | Ok () -> printfn "The comment was successfully submitted as ham."
   | Error error -> printfn $"An error occurred: {error.Message}"
 }

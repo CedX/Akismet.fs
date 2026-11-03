@@ -7,7 +7,7 @@ async {
   let comment = Comment(author, Content = "Spam!")
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
-  match! client.SubmitSpamAsync comment with
+  match! client.AsyncSubmitSpam comment with
   | Ok () -> printfn "The comment was successfully submitted as spam."
   | Error error -> printfn $"An error occurred: {error.Message}"
 }

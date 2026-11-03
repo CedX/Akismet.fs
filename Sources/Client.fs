@@ -46,8 +46,8 @@ type Client(apiKey: string, blog: Blog) =
       GC.SuppressFinalize this
 
   /// Checks the specified comment against the service database, and returns a value indicating whether it is spam.
-  member this.CheckCommentAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<CheckResult, HttpRequestException>> = async {
-    match! this.PostAsync("1.1/comment-check", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
+  member this.AsyncCheckComment(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<CheckResult, HttpRequestException>> = async {
+    match! this.AsyncPost("1.1/comment-check", comment.ToDictionary(), ?cancellationToken = cancellationToken) with
     | Error error -> return Error error
     | Ok disposable ->
       use response = disposable
@@ -61,11 +61,11 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Checks the specified comment against the service database, and returns a value indicating whether it is spam.
   member this.CheckComment(comment: Comment, ?cancellationToken: CancellationToken): Result<CheckResult, HttpRequestException> =
-    this.CheckCommentAsync(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
+    this.AsyncCheckComment(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
 
   /// Submits the specified comment that was incorrectly marked as spam but should not have been.
-  member this.SubmitHamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
-    let! result = this.PostAsync("1.1/submit-ham", comment.ToDictionary(), ?cancellationToken = cancellationToken)
+  member this.AsyncSubmitHam(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
+    let! result = this.AsyncPost("1.1/submit-ham", comment.ToDictionary(), ?cancellationToken = cancellationToken)
     match! Client.ReadHttpContent result with
     | Error error -> return Error error
     | Ok content -> return match content with Thanks -> Ok () | _ -> Error (HttpRequestException "Invalid server response.")
@@ -73,11 +73,11 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Submits the specified comment that was incorrectly marked as spam but should not have been.
   member this.SubmitHam(comment: Comment, ?cancellationToken: CancellationToken): Result<unit, HttpRequestException> =
-    this.SubmitHamAsync(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
+    this.AsyncSubmitHam(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
 
   /// Submits the specified comment that was not marked as spam but should have been.
-  member this.SubmitSpamAsync(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
-    let! result = this.PostAsync("1.1/submit-spam", comment.ToDictionary(), ?cancellationToken = cancellationToken)
+  member this.AsyncSubmitSpam(comment: Comment, ?cancellationToken: CancellationToken): Async<Result<unit, HttpRequestException>> = async {
+    let! result = this.AsyncPost("1.1/submit-spam", comment.ToDictionary(), ?cancellationToken = cancellationToken)
     match! Client.ReadHttpContent result with
     | Error error -> return Error error
     | Ok content -> return match content with Thanks -> Ok () | _ -> Error (HttpRequestException "Invalid server response.")
@@ -85,11 +85,11 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Submits the specified comment that was not marked as spam but should have been.
   member this.SubmitSpam(comment: Comment, ?cancellationToken: CancellationToken): Result<unit, HttpRequestException> =
-    this.SubmitSpamAsync(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
+    this.AsyncSubmitSpam(comment, ?cancellationToken = cancellationToken) |> Async.RunSynchronously
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
-  member this.VerifyKeyAsync(?cancellationToken: CancellationToken): Async<Result<bool, HttpRequestException>> = async {
-    let! result = this.PostAsync("1.1/verify-key", ?cancellationToken = cancellationToken)
+  member this.AsyncVerifyKey(?cancellationToken: CancellationToken): Async<Result<bool, HttpRequestException>> = async {
+    let! result = this.AsyncPost("1.1/verify-key", ?cancellationToken = cancellationToken)
     match! Client.ReadHttpContent result with
     | Error error -> return Error error
     | Ok content -> return Ok (content = "valid")
@@ -97,7 +97,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
   member this.VerifyKey(?cancellationToken: CancellationToken): Result<bool, HttpRequestException> =
-    this.VerifyKeyAsync(?cancellationToken = cancellationToken) |> Async.RunSynchronously
+    this.AsyncVerifyKey(?cancellationToken = cancellationToken) |> Async.RunSynchronously
 
   /// Releases any resources associated with this object.
   member private _.Dispose(disposing: bool) =
@@ -107,7 +107,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Queries the service by posting the specified fields to a given end point, and returns the response.
   // fsharplint:disable-next-line MaxCharactersOnLine
-  member private this.PostAsync(requestUri: string, ?fields: Dictionary<string, string>, ?cancellationToken: CancellationToken): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
+  member private this.AsyncPost(requestUri: string, ?fields: Dictionary<string, string>, ?cancellationToken: CancellationToken): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
     let body = this.Blog.ToDictionary()
     body.Add("api_key", this.ApiKey)
     if this.IsTest then body.Add("is_test", "1")

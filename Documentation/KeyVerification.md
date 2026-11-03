@@ -8,7 +8,7 @@ if you will have multiple users with their own Akismet subscriptions using your 
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/key-verification) for more information.
 
 ```fsharp
-member Client.VerifyKey: CancellationToken option
+member Client.AsyncVerifyKey: CancellationToken option
   -> Async<Result<bool, HttpRequestException>>
 ```
 
@@ -34,7 +34,7 @@ open Belin.Akismet
 
 async {
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
-  match! client.VerifyKeyAsync() with
+  match! client.AsyncVerifyKey() with
   | Ok true -> printfn "The API key is valid."
   | Ok false -> printfn "The API key is invalid."
   | Error error -> printfn $"An error occurred: {error.Message}"

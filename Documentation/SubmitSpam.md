@@ -10,7 +10,7 @@ you should ensure that the values that you do send match those of the original c
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/submit-spam-missed-spam) for more information.
 
 ```fsharp
-member Client.SubmitSpam: Comment * CancellationToken option
+member Client.AsyncSubmitSpam: Comment * CancellationToken option
   -> Async<Result<unit, HttpRequestException>>
 ```
 
@@ -45,7 +45,7 @@ async {
   let comment = Comment(author, Content = "Spam!")
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
-  match! client.SubmitSpamAsync comment with
+  match! client.AsyncSubmitSpam comment with
   | Ok () -> printfn "The comment was successfully submitted as spam."
   | Error error -> printfn $"An error occurred: {error.Message}"
 }
