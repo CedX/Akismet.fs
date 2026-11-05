@@ -1,5 +1,4 @@
 namespace Belin.Akismet
-// fsharplint:disable TupleCommaSpacing
 
 open System
 open System.Collections.Generic
