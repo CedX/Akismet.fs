@@ -6,7 +6,7 @@ open System.Net.Http
 
 /// Tests the features of the `Client` class.
 [<TestClass>]
-type ClientTests(testContext: TestContext) =
+type ClientTests() =
 
   /// The client used to query the remote API.
   static let client = new Client(
@@ -46,20 +46,20 @@ type ClientTests(testContext: TestContext) =
 
   [<TestMethod>]
   member _.CheckComment() =
-    client.CheckComment(ham, testContext.CancellationToken) |> Should.be (Ok Ham)
-    client.CheckComment(spam, testContext.CancellationToken) |> Should.beOneOf ([Ok Spam; Ok PervasiveSpam] :> Result<CheckResult, HttpRequestException> seq)
+    client.CheckComment ham |> Should.be (Ok Ham)
+    client.CheckComment spam |> Should.beOneOf ([Ok Spam; Ok PervasiveSpam] :> Result<CheckResult, HttpRequestException> seq)
 
   [<TestMethod>]
   member _.SubmitHam() =
-    client.SubmitHam(ham, testContext.CancellationToken) |> Result.isOk |> Should.beTrue
+    client.SubmitHam ham |> Result.isOk |> Should.beTrue
 
   [<TestMethod>]
   member _.SubmitSpam() =
-    client.SubmitSpam(spam, testContext.CancellationToken) |> Result.isOk |> Should.beTrue
+    client.SubmitSpam spam |> Result.isOk |> Should.beTrue
 
   [<TestMethod>]
   member _.VerifyKey() =
-    client.VerifyKey testContext.CancellationToken |> Should.be (Ok true)
+    client.VerifyKey() |> Should.be (Ok true)
 
     let newClient = new Client("0123456789AB", client.Blog, IsTest = true)
-    newClient.VerifyKey testContext.CancellationToken |> Should.be (Ok false)
+    newClient.VerifyKey() |> Should.be (Ok false)

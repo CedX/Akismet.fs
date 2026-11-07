@@ -8,8 +8,7 @@ that any values you're passing here match up with the original and corresponding
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/submit-ham-false-positives) for more information.
 
 ```fsharp
-member Client.AsyncSubmitHam: Comment * CancellationToken option
-  -> Async<Result<unit, HttpRequestException>>
+member Client.AsyncSubmitHam: Comment -> Async<Result<unit, HttpRequestException>>
 ```
 
 ## Parameters
@@ -19,9 +18,6 @@ The user's `Comment` to be submitted, incorrectly classified as spam.
 
 > [!NOTE]
 > Ideally, it should be the same object as the one passed to the original [comment check](CommentCheck.md) API call.
-
-### **?cancellationToken**: CancellationToken
-The token to cancel the operation.
 
 ## Return value
 An `Async<Result>` that completes when the given `Comment` has been submitted.

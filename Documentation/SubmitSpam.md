@@ -10,8 +10,7 @@ you should ensure that the values that you do send match those of the original c
 See the [Akismet API documentation](https://akismet.com/developers/detailed-docs/submit-spam-missed-spam) for more information.
 
 ```fsharp
-member Client.AsyncSubmitSpam: Comment * CancellationToken option
-  -> Async<Result<unit, HttpRequestException>>
+member Client.AsyncSubmitSpam: Comment -> Async<Result<unit, HttpRequestException>>
 ```
 
 ## Parameters
@@ -21,9 +20,6 @@ The user's `Comment` to be submitted, incorrectly classified as ham.
 
 > [!NOTE]
 > Ideally, it should be the same object as the one passed to the original [comment check](CommentCheck.md) API call.
-
-### **?cancellationToken**: CancellationToken
-The token to cancel the operation.
 
 ## Return value
 An `Async<Result>` that completes when the given `Comment` has been submitted.
