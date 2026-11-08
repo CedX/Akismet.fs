@@ -24,6 +24,22 @@ module internal Should =
   let beFalse (condition: bool) =
     Assert.IsFalse condition
 
+  /// Tests whether the given value is greater than the specified lower bound.
+  let beGreaterThan (lowerBound: 'T) (value: 'T) =
+    Assert.IsGreaterThan(lowerBound, value)
+
+  /// Tests whether the given value is greater than or equal to the specified lower bound.
+  let beGreaterThanOrEqualTo (lowerBound: 'T) (value: 'T) =
+    Assert.IsGreaterThanOrEqualTo(lowerBound, value)
+
+  /// Tests whether the given value is less than the specified upper bound.
+  let beLessThan (upperBound: 'T) (value: 'T) =
+    Assert.IsLessThan(upperBound, value)
+
+  /// Tests whether the given value is less than or equal to the specified upper bound.
+  let beLessThanOrEqualTo (upperBound: 'T) (value: 'T) =
+    Assert.IsLessThanOrEqualTo(upperBound, value)
+
   /// Tests whether the specified object is `null`.
   let beNull (value: 'T) =
     Assert.IsNull value
@@ -44,6 +60,14 @@ module internal Should =
   let beTrue (condition: bool) =
     Assert.IsTrue condition
 
+  /// Tests whether the specified collection contains the given element.
+  let contain (expected: 'T) (collection: 'T seq) =
+    Assert.Contains<'T>(expected, collection)
+
+  /// Tests whether the specified string contains the given substring.
+  let containString (substring: string) (value: string) =
+    Assert.Contains(substring, value)
+
   /// Tests whether the specified string ends with the given suffix.
   let endWith (expectedSuffix: string) (value: string) =
     Assert.EndsWith(expectedSuffix, value)
@@ -59,6 +83,14 @@ module internal Should =
   /// Tests whether the specified object is not `null`.
   let notBeNull (value: 'T) =
     Assert.IsNotNull value
+
+  /// Tests whether the specified collection does not contain the given element.
+  let notContain (expected: 'T) (collection: 'T seq) =
+    Assert.DoesNotContain<'T>(expected, collection)
+
+  /// Tests whether the specified string does not contain the given substring.
+  let notContainString (substring: string) (value: string) =
+    Assert.DoesNotContain(substring, value)
 
   /// Tests whether the specified string does not match the given regular expression.
   let notMatchRegex (pattern: Regex) (value: string) =
@@ -112,6 +144,30 @@ module internal ShouldAsync =
     return Should.beFalse condition
   }
 
+  /// Tests whether the given value is greater than the specified lower bound.
+  let beGreaterThan (lowerBound: 'T) (value: Async<'T>) = task {
+    let! value = value
+    return value |> Should.beGreaterThan lowerBound
+  }
+
+  /// Tests whether the given value is greater than or equal to the specified lower bound.
+  let beGreaterThanOrEqualTo (lowerBound: 'T) (value: Async<'T>) = task {
+    let! value = value
+    return value |> Should.beGreaterThanOrEqualTo lowerBound
+  }
+
+  /// Tests whether the given value is less than the specified upper bound.
+  let beLessThan (upperBound: 'T) (value: Async<'T>) = task {
+    let! value = value
+    return value |> Should.beLessThan upperBound
+  }
+
+  /// Tests whether the given value is less than or equal to the specified upper bound.
+  let beLessThanOrEqualTo (upperBound: 'T) (value: Async<'T>) = task {
+    let! value = value
+    return value |> Should.beLessThanOrEqualTo upperBound
+  }
+
   /// Tests whether the specified object is `null`.
   let beNull (value: Async<'T>) = task {
     let! value = value
@@ -142,6 +198,18 @@ module internal ShouldAsync =
     return Should.beTrue condition
   }
 
+  /// Tests whether the specified collection contains the given element.
+  let contain (expected: 'T) (collection: Async<'T seq>) = task {
+    let! collection = collection
+    return collection |> Should.contain expected
+  }
+
+  /// Tests whether the specified string contains the given substring.
+  let containString (substring: string) (value: Async<string>) = task {
+    let! value = value
+    return value |> Should.containString substring
+  }
+
   /// Tests whether the specified string ends with the given suffix.
   let endWith (expectedSuffix: string) (value: Async<string>) = task {
     let! value = value
@@ -164,6 +232,18 @@ module internal ShouldAsync =
   let notBeNull (value: Async<'T>) = task {
     let! value = value
     return Should.notBeNull value
+  }
+
+  /// Tests whether the specified collection does not contain the given element.
+  let notContain (expected: 'T) (collection: Async<'T seq>) = task {
+    let! collection = collection
+    return collection |> Should.notContain expected
+  }
+
+  /// Tests whether the specified string does not contain the given substring.
+  let notContainString (substring: string) (value: Async<string>) = task {
+    let! value = value
+    return value |> Should.notContainString substring
   }
 
   /// Tests whether the specified string does not match the given regular expression.
