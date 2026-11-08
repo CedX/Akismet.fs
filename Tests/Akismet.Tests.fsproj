@@ -20,13 +20,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MSTest" Version="4.5.2" />
+		<PackageReference Include="Belin.Should" Version="2026.11.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
 		<ProjectReference Include="../Sources/Akismet.fsproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Include="AssemblyInfo.fs" />
-		<Compile Include="Should.fs" />
 		<Compile Include="**/*.Tests.fs" />
 	</ItemGroup>
 </Project>
