@@ -50,7 +50,7 @@ type Client(apiKey: string, blog: Blog) =
     | Ok disposable ->
       let! cancellationToken = Async.CancellationToken
       use response = disposable
-      match! response.Content.ReadAsStringAsync cancellationToken |> Async.AwaitTask with
+      match! response.Content.ReadAsStringAsync cancellationToken |> Async.Await with
       | "false" -> return Ok Ham
       | _ ->
         match Client.GetHttpHeader response.Headers "X-akismet-pro-tip" with
@@ -117,7 +117,7 @@ type Client(apiKey: string, blog: Blog) =
 
     try
       let! cancellationToken = Async.CancellationToken
-      let! response = httpClient.SendAsync(request, cancellationToken) |> Async.AwaitTask
+      let! response = httpClient.SendAsync(request, cancellationToken) |> Async.Await
       response.EnsureSuccessStatusCode() |> ignore<HttpResponseMessage>
 
       let statusCode = HttpStatusCode.BadRequest
@@ -130,11 +130,7 @@ type Client(apiKey: string, blog: Blog) =
 
       return Ok response
     with
-    | :? HttpRequestException as ex -> return Error ex
-    | :? AggregateException as ex ->
-      match ex.InnerException with
-      | :? HttpRequestException as innerEx -> return Error innerEx
-      | _ -> return raise (ex.Flatten())
+      :? HttpRequestException as ex -> return Error ex
   }
 
   /// Gets the value of the HTTP header with the specified name.
@@ -154,6 +150,6 @@ type Client(apiKey: string, blog: Blog) =
     | Ok disposable ->
       use response = disposable
       let! cancellationToken = Async.CancellationToken
-      let! content = response.Content.ReadAsStringAsync cancellationToken |> Async.AwaitTask
+      let! content = response.Content.ReadAsStringAsync cancellationToken |> Async.Await
       return Ok content
   }
