@@ -19,7 +19,7 @@ async {
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
   let! result = client.AsyncCheckComment comment
-  printfn $"It should be `Ok Spam`: {result}"
+  printn $"It should be `Ok Spam`: {result}"
 }
 ```
 
@@ -38,7 +38,7 @@ async {
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
   let! result = client.AsyncCheckComment comment
-  printfn $"It should be `Ok Ham`: {result}"
+  printn $"It should be `Ok Ham`: {result}"
 }
 ```
 

@@ -40,7 +40,7 @@ async {
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
   match! client.AsyncSubmitHam comment with
-  | Ok () -> printfn "The comment was successfully submitted as ham."
-  | Error error -> printfn $"An error occurred: {error.Message}"
+  | Ok () -> printn "The comment was successfully submitted as ham."
+  | Error error -> printn $"An error occurred: {error.Message}"
 }
 ```

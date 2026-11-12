@@ -43,7 +43,7 @@ module Tools =
 
   /// Prints the specified message to the standard output.
   let writeOutput (message: objnull) =
-    printfn "%s" (Convert.ToString message)
+    printn message
 
   /// Invokes the specified command.
   let startProcess (command: string) (arguments: string) =

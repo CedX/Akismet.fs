@@ -59,9 +59,9 @@ async {
   use client = new Client("123YourAPIKey", blog)
 
   match! client.AsyncCheckComment comment with
-  | Ok Ham -> printfn "The comment is ham."
-  | Ok Spam | Ok PervasiveSpam -> printfn "The comment is spam."
-  | Error error -> printfn $"An error occurred: {error.Message}"
+  | Ok Ham -> printn "The comment is ham."
+  | Ok Spam | Ok PervasiveSpam -> printn "The comment is spam."
+  | Error error -> printn $"An error occurred: {error.Message}"
 }
 ```
 

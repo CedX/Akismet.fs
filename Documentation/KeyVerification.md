@@ -31,9 +31,9 @@ open Belin.Akismet
 async {
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
   match! client.AsyncVerifyKey() with
-  | Ok true -> printfn "The API key is valid."
-  | Ok false -> printfn "The API key is invalid."
-  | Error error -> printfn $"An error occurred: {error.Message}"
+  | Ok true -> printn "The API key is valid."
+  | Ok false -> printn "The API key is invalid."
+  | Error error -> printn $"An error occurred: {error.Message}"
 }
 ```
 

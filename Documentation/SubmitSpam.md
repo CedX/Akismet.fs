@@ -42,7 +42,7 @@ async {
 
   use client = new Client("123YourAPIKey", Blog "https://www.yourblog.com")
   match! client.AsyncSubmitSpam comment with
-  | Ok () -> printfn "The comment was successfully submitted as spam."
-  | Error error -> printfn $"An error occurred: {error.Message}"
+  | Ok () -> printn "The comment was successfully submitted as spam."
+  | Error error -> printn $"An error occurred: {error.Message}"
 }
 ```
