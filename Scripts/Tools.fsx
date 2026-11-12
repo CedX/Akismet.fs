@@ -37,13 +37,13 @@ module Tools =
     |> Seq.iter removeItem
 
   /// Prints the specified message to the standard error and terminates the process.
-  let writeError (message: string) =
-    eprintfn "%s" message
+  let writeError (message: objnull) =
+    eprintfn "%s" (Convert.ToString message)
     Environment.Exit 1
 
   /// Prints the specified message to the standard output.
-  let writeOutput (message: string) =
-    printfn "%s" message
+  let writeOutput (message: objnull) =
+    printfn "%s" (Convert.ToString message)
 
   /// Invokes the specified command.
   let startProcess (command: string) (arguments: string) =
