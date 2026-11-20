@@ -60,7 +60,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Checks the specified comment against the service database, and returns a value indicating whether it is spam.
   member this.CheckComment(comment: Comment): Result<CheckResult, HttpRequestException> =
-    this.AsyncCheckComment comment |> Async.RunSynchronously
+    this.AsyncCheckComment comment |> Async.RunSynchronouslyImmediate
 
   /// Submits the specified comment that was incorrectly marked as spam but should not have been.
   member this.AsyncSubmitHam(comment: Comment): Async<Result<unit, HttpRequestException>> = async {
@@ -72,7 +72,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Submits the specified comment that was incorrectly marked as spam but should not have been.
   member this.SubmitHam(comment: Comment): Result<unit, HttpRequestException> =
-    this.AsyncSubmitHam comment |> Async.RunSynchronously
+    this.AsyncSubmitHam comment |> Async.RunSynchronouslyImmediate
 
   /// Submits the specified comment that was not marked as spam but should have been.
   member this.AsyncSubmitSpam(comment: Comment): Async<Result<unit, HttpRequestException>> = async {
@@ -84,7 +84,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Submits the specified comment that was not marked as spam but should have been.
   member this.SubmitSpam(comment: Comment): Result<unit, HttpRequestException> =
-    this.AsyncSubmitSpam comment |> Async.RunSynchronously
+    this.AsyncSubmitSpam comment |> Async.RunSynchronouslyImmediate
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
   member this.AsyncVerifyKey(): Async<Result<bool, HttpRequestException>> = async {
@@ -96,7 +96,7 @@ type Client(apiKey: string, blog: Blog) =
 
   /// Checks the API key against the service database, and returns a value indicating whether it is valid.
   member this.VerifyKey(): Result<bool, HttpRequestException> =
-    this.AsyncVerifyKey() |> Async.RunSynchronously
+    this.AsyncVerifyKey() |> Async.RunSynchronouslyImmediate
 
   /// Releases any resources associated with this object.
   member private _.Dispose(disposing: bool) =
