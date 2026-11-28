@@ -1,4 +1,5 @@
 namespace Belin.Akismet
+// fsharplint:disable MaxCharactersOnLine
 
 open System
 open System.Collections.Generic
@@ -105,7 +106,6 @@ type Client(apiKey: string, blog: Blog) =
       disposed <- true
 
   /// Queries the service by posting the specified fields to a given end point, and returns the response.
-  // fsharplint:disable-next-line MaxCharactersOnLine
   member private this.AsyncPost(requestUri: string, ?fields: Dictionary<string, string>): Async<Result<HttpResponseMessage, HttpRequestException>> = async {
     let body = this.Blog.ToDictionary()
     body.Add("api_key", this.ApiKey)
