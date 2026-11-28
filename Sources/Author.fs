@@ -35,7 +35,7 @@ type Author(ipAddress: IPAddress) =
     if not (String.IsNullOrWhiteSpace this.Email) then dictionary.Add("comment_author_email", this.Email)
     if not (String.IsNullOrWhiteSpace this.Name) then dictionary.Add("comment_author", this.Name)
     if not (String.IsNullOrWhiteSpace this.Role) then dictionary.Add("user_role", this.Role)
-    match this.Url with None -> () | Some url -> dictionary.Add("comment_author_url", string url)
+    this.Url |> Option.iter (fun url -> dictionary.Add("comment_author_url", string url))
     if not (String.IsNullOrWhiteSpace this.UserAgent) then dictionary.Add("user_agent", this.UserAgent)
     dictionary
 

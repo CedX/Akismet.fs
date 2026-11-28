@@ -38,11 +38,11 @@ type Comment(author: Author) =
     let dictionary = this.Author.ToDictionary()
     if not (String.IsNullOrWhiteSpace this.Content) then dictionary.Add("comment_content", this.Content)
     // TODO if not this.Context.IsEmpty then dictionary.Add("comment_context", this.Context |> String.concat ",")
-    match this.Date with None -> () | Some date -> dictionary.Add("comment_date_gmt", date.ToUniversalTime().ToString "o")
-    match this.Permalink with None -> () | Some permalink -> dictionary.Add("permalink", string permalink)
-    match this.PostModified with None -> () | Some postModified -> dictionary.Add("comment_post_modified_gmt", postModified.ToUniversalTime().ToString "o")
+    this.Date |> Option.iter (fun date -> dictionary.Add("comment_date_gmt", date.ToUniversalTime().ToString "o"))
+    this.Permalink |> Option.iter (fun permalink -> dictionary.Add("permalink", string permalink))
+    this.PostModified |> Option.iter (fun postModified -> dictionary.Add("comment_post_modified_gmt", postModified.ToUniversalTime().ToString "o"))
     if not (String.IsNullOrWhiteSpace this.RecheckReason) then dictionary.Add("recheck_reason", this.RecheckReason)
-    match this.Referrer with None -> () | Some referrer -> dictionary.Add("referrer", string referrer)
+    this.Referrer |> Option.iter (fun referrer -> dictionary.Add("referrer", string referrer))
     if not (String.IsNullOrWhiteSpace this.Type) then dictionary.Add("comment_type", this.Type)
     dictionary
 

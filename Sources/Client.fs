@@ -110,7 +110,7 @@ type Client(apiKey: string, blog: Blog) =
     let body = this.Blog.ToDictionary()
     body.Add("api_key", this.ApiKey)
     if this.IsTest then body.Add("is_test", "1")
-    match fields with None -> () | Some entries -> for entry in entries do body.Add(entry.Key, entry.Value)
+    fields |> Option.iter (fun entries -> for entry in entries do body.Add(entry.Key, entry.Value))
 
     use request = new HttpRequestMessage(HttpMethod.Post, Uri(this.BaseUrl, requestUri), Content = new FormUrlEncodedContent(body))
     request.Headers.Add("User-Agent", this.UserAgent)
